@@ -1,0 +1,25 @@
+
+[DESTINATION] [MASK] [NEXT HOP/EXIT INTERFACE] 
+
+!@r1 
+conf t
+  ip route 10.1.1.8 255.255.255.252 10.1.1.2
+ end
+ping 10.1.1.10
+
+!@r2
+conf t
+  ip route 10.1.1.0 255.255.255.252 10.1.1.2
+ end
+ping 10.1.1.10
+
+r3
+conf t
+  ip route 10.1.1.0 255.255.255.252 10.1.1.9
+ end
+ping 10.1.1.1
+
+conf t
+  ip route 10.1.1.10 255.255.255.252 10.1.1.2
+ end
+ping 10.1.1.10
