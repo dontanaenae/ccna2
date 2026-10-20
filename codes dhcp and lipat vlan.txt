@@ -1,0 +1,103 @@
+189 users
+192.168.128.0 /18
+
+
+C:8 bits
+S: /24 3rd, 1i
+I: 192.168.129.0 /24
+
+Network: 192.168.129.0 /24
+First: 192.168.129.1 
+LVALID: 192.168.129.254
+Last/BR: 192.168.129.255
+NOT: 192.168.130.0
+
+vlan 22
+name ADMIN
+exit
+Int vlan 22
+no shut
+ip add 10.91.0.129 255.255.255.224
+ip ospf 1 area 0
+ip dhcp excluded-add 10.91.0.129 10.91.0.139
+ip dhcp pool ADMIN.com
+network 10.91.0.128 255.255.255.224
+default-router 10.91.0.129
+domain-name ADMIN.com
+dns-server 10.91.1.10
+option 150 ip 10.91.100.8
+Int Fa 0/5
+swi Voice vlan 22
+do sh ip dhcp binding
+
+
+c1 dhcp
+conf t
+vlan 40
+  name ACCENTURE
+  int vlan 40
+   no shut
+    ip add 192.168.129.1 255.255.255.0
+  ip dhcp excluded-address 192.168.129.1 192.168.129.20
+  ip dhcp pool ACCENTURE
+    network 192.168.129.0 255.255.255.0
+    default-router 192.168.129.1
+    domain-name ACCENTURE
+    dns-server 10.0.0.0 /8
+    option 
+  end
+
+a1
+(lipat vlan code)
+conf t
+ int e0/0
+no shut
+  switchport mode access
+  switchport access vlan 40
+end
+
+p1
+conf t
+ int e0/0
+no shut
+ip address dhcp
+end
+
+
+2800 users
+172.16.32.0 /19
+C2 as DHCP
+Reserve the first 100
+Assign on VLAN 50
+P2 is a DHCP client
+
+12bits
+/20
+(3rd, 16i)
+
+Network	   : 172.16.48.0 /20
+FirstValid : 172.16.48.1
+LastValid  : 172.16.63.254
+Last/BR    : 172.16.63.255
+NotUrs     : 172.16.64.0 /?
+
+!@c2 dhcp
+conf t
+vlan 50
+  name CONCENTRIX
+  int vlan 50
+   no shut
+    ip add 172.16.48.1 255.255.240.0
+ exit
+  ip dhcp excluded-address 172.16.48.1 172.16.48.100
+  ip dhcp pool CONCENTRIX
+    network 172.16.48.0 255.255.240.0
+    default-router 172.16.48.1
+    domain-name CONCENTRIX
+  end
+
+
+!@p2 dhcp client
+
+
+
