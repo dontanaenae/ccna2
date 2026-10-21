@@ -1,3 +1,5 @@
+!@FOR DHCP CONFIGURATION
+
 config t
 vlan 21
  name FINANCE
