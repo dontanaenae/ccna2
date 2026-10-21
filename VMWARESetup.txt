@@ -12,6 +12,146 @@ NetAdapter 1: NAT (208.8.8.0/24)
 NetAdapter 2: VMNet15 (10.255.10.0/24)
 NetAdapter 3: VMNet16 (10.69.255.0/29)
 NetAdapter 4: VMNet17 (10.69.255.8/29)
-
+_____________________________________________________
 !@cmd
 route add 172.16.29.0 mask 255.255.255.0 10.69.255.6
+
+
+config t
+ip route 192.168.1.128 255.255.255.224 10.2.1.2
+ip route 192.168.1.129 255.255.255.255 10.2.1.1
+
+
+
+
+
+
+
+
+
+
+
+
+EIGRP routing
+
+!@c1
+conf t
+ router eigrp 100
+  network 10.2.1.0 	0.0.0.255
+  network 10.2.2.0 	0.0.0.255
+  network 192.168.1.128 0.0.0.31
+  network 10.1.4.4 	0.0.0.3
+end
+
+
+!@c2
+conf t
+ router eigrp 100
+  network 10.2.1.0 	0.0.0.255
+  network 10.2.2.0 	0.0.0.255
+  network 192.168.1.128 0.0.0.31
+  network 10.1.4.8 	0.0.0.3
+end
+
+EIGRP Multicast Address - 224.0.0.10
+
+
+
+!@r4
+conf t
+router eigrp 100
+variance 2
+end
+
+conf t
+no router ospf 1
+ router ospf 1
+  router-id 2.2.2.2
+  network 2.2.2.2 0.0.0.0 area 0
+  network 10.1.1.4 0.0.0.3 area 0
+  network 10.1.1.0 0.0.0.3 area 12
+  end
+
+
+!@r4 and r3
+conf t
+key chain CCNA
+ key 1
+  key-string pass
+  crypto md5
+ !
+ int e1/2
+  ip ospf authentication key CCNA
+end
+
+
+!@COREBABA
+conf t
+ in lo10
+   ip add 192.168.91.91 255.255.255.255
+   ip  ospf 1 area 91
+ end
+
+conf t
+router eigrp 100
+ no network 192.168.0.0 0.0.255.255
+network 192.168.0.0 0.0.0.255
+  router ospf 1
+   redistribute eigrp 100 subnets metric 2
+end
+!@I2 - PLDT
+config t
+ router bgp 2
+ bgp log-neighbor-changes
+ neighbor 25.2.5.5  remote-as 45
+ neighbor 32.3.2.3  remote-as 3
+ neighbor 207.7.7.1  remote-as 1
+ neighbor 24.2.4.4  remote-as 45
+ address-family ipv4
+  neighbor 25.2.5.5 activate
+  neighbor 32.3.2.3 activate
+  neighbor 207.7.7.1 activate
+  neighbor 24.2.4.4  activate
+  network 8.8.8.8 mask 255.255.255.255
+  network 33.33.33.33 mask 255.255.255.255
+  network __.__.__.__ mask __.__.__.__
+  network __.__.__.__ mask __.__.__.__
+  network __.__.__.__ mask __.__.__.__
+  end
+
+
+conf t
+ ip nat inside source static 10.1.4.6 208.8.8.100 
+ ip nat inside source static 10.1.4.10 207.7.7.100
+ end
+show ip nat translations
+
+
+64 new sites
+10.30.64.0/19
+C:6 bits
+A:/19 + 6bits = /25 (4th, 128i)
+I: First Office: 10.30.64.0 /25
+  Second Office: 10.30.64.128 /25
+Third Office   : 10.30.65.0 /25
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
