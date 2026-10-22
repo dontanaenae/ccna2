@@ -1,0 +1,9 @@
+{
+ "type" : "loopback",
+ "id"   : "11",
+ "ipv4" : {
+    "ip": "11.11.11.11",
+    "mask": "255.255.255.255"
+ },
+  "desc" : "CONFIG-VIA-PY-JSON"
+}
