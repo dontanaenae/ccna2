@@ -327,12 +327,12 @@ wireshark = bridge priority is 32768 = very Hackable!
 " bobo/inutil ang Network Engineer nyo sa company!"
 Protect the Most Important SWitch in your 
 Office: RootBridge = TAAS, 2ndRootBridge = BABA:
-TAAS:/d1       32786 --> 24576
+TAAS:/c1       32786 --> 24576
 Config t
 spanning-tree mode pvst
 spanning-tree vlan 1-100 root Primary
 do sh spanning-tree vlan 1
-BABA:/d2         32768->   28672
+BABA:/c2         32768->   28672
 Config t              
 spanning-tree mode pvst
 spanning-tree vlan 1-100 root Secondary
