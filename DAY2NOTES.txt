@@ -1,0 +1,67 @@
+NUMBERING SYSTEM CONVERSION TABLE
+Pera:			IPv4:				IPv6:
+0-9			0-255				0-9, a-f
+
+4999			4.255.255.255			4fff
+5000			5.0.0.0				:5000:
+5001			5.0.0.1				:5001:
+
+4998			4.255.255.254			4ffe
+4999			4.255.255.255			4fff
+5000			5.0.0.0				:5000:
+
+3098			3.0.255.254			:30fe:
+3099			3.0.255.255			:30ff
+3100			3.1.0.0				:3100:
+
+6989			6.255.254.255			:6fef:
+6990			6.255.255.0			:6ff0:
+6991			6.255.255.1			:6ff1:
+
+8089			8.0.254.255`			:80ef:
+8090			8.0.255.0			:80f0:
+8091			8.0.255.1			:80f1:
+
+
+HOW TO SUBNET: 2 METHODS
+Method 1: 7 to 20 mins: World Solution 
+Method 2: 3 Secs: Rivan Finger Method
+
+CSI = Convert, Subtract, IpasokSaHiwa
+     Convert: Convert it to bits (figure out the bit length)
+    Subtract: Subtract to /32 (32 is the max bits)
+IpasokSaHiwa: Ipasok sa hiwa (ipasok sa octet of the original network)
+
+Get the:
+Yours (Network address[Family])
+First Usable IP (Panganay)
+Last Usable IP (Bunso)
+Not Yours: Add it again to the network address (doblehin, ipasok ulit sa hiwa)
+
+
+Example 1: Subnet 10.0.0.0/8 [16,777,214 Computers], Accenture branches:
+	
+				main (Texas)		California		Singapore		Indonesia		Caltex			Malaysia		HongKong
+				8500 users		4500 users		120 users		750 users		1700 users		220 users		50 users
+Convert:       			 14b			13b			7b			10b			11b			8b			6b
+Subtract:			/18			/19			/25			/21			/21			/24			/26
+Ipasoksahiwa:			3rd, 64i		3rd, 32i		4th, 128i		3rd, 4i		        3rd,8i			3rd, 1i			4th, 64i		
+Yours(Network address):		10.0.64.0/18		10.0.32.0/19		10.0.0.128/25		10.0.64.0/22		10.0.8.0/21		10.0.1.0/24		10.0.0.64/26
+1st Usable IP:			10.0.61.1/18		10.0.32.1/19		10.0.0.129/25		10.0.64.1/22	 	10.0.8.1/21		10.0.1.1/24		10.0.0.65/26
+Last Usable IP:			10.0.127.255		10.0.63.255		10.0.0.255/25		10.0.127.255/22		10.0.15.255/21		10.0.1.255/24		10.0.0.127/26
+NotYours:       		10.0.128.0/?		10.0.64.0/?		10.0.1.0/?		10.0.8.0/?		10.0.16.0/?		10.0.2.0/?		10.0.0.128/?
+
+
+Example 2: Alorica 10.0.0.0/8 [16,777,214 ip addresses]
+Subnet to: 		ALORICADAVAO			ALORICACEBU			ALORICABALER			ALORICAMANILA			
+			2700 agents			350 agents			28 agents			750 agents
+Convert: 		12b				9b				5b				10b
+Subtract:		/20				/23				/27				/22
+IpasokSaHIwa:		3rd,16i				3RD, 2i				4th,32i				3rd, 4i
+
+Yours(Net Add):		10.0.16.0/20			10.0.2.0/23			10.0.0.32/27			10.0.4.0/22	
+1st Usable IP:		10.0.16.1/20			10.0.2.1/23			10.0.0.33/27			10.0.4.1/22	
+Last Usable IP: 	10.0.31.255/20			10.0.3.255/23			10.0.0.63			10.0.7.255/22
+NotYours:		10.0.32.0/?			10.0.4.0/?			10.0.0.64/?			10.0.8.0/?	
+
+				

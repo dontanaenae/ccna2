@@ -1,0 +1,28 @@
+C1/D1
+
+conf t 
+vlan 67
+name RIVANCORP.com
+int vlan 67
+no shut
+ ip add 10.0.16.1 255.255.255.0
+ip dhcp excluded-add 10.0.16.1 1.0.16.100
+ip dhcp pool RIVANCORP.com
+network 10.0.16.0 255.255.255.0
+default-router 10.0.16.1
+domain-name RIVANCORP.com
+end
+
+A1
+
+conf t
+int e0/0
+switchport mode access
+switchport access vlan 67
+end
+
+conf t 
+int e0/0
+ip add dhcp
+no shut
+end
