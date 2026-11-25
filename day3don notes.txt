@@ -1,0 +1,223 @@
+CIDR		SUBNET MASK		RIVAN		WLDCARD
+/18		255.255.192.0		3rd, 64i	0.0.63.255
+/27		255.255.255.224		4th, 32i	0.0.0.31
+/14		255.252.0.0		2nd, 4i		0.3.255.255
+/30		255.255.255.252		4th, 4i		0.0.0.3
+
+Bit Length
+42		6b
+1800		11b
+365		9b
+980		10b
+112		7b
+
+10.0.0.0    - 10.255.255.255  CLASS A NETWORK
+172.16.0.0  - 172.31.255.255  CLASS B NETWORK
+192.168.0.0 - 192.168.255.255 CLASS C NETWORK
+
+Department: ADMIN
+12 IPs
+Address Space 10.0.0.0/8
+
+CSI
+Convert 12 = 4bits
+Subtract: /32 - /4 = /28 (4th, 16i)
+Ipasok:
+
+
+
+Design a network for 64 computers using the address space 
+192.168.53.128/25. The first network is unusable.
+
+FIRST VALID (+1 Network)
+LAST VALID (-1 Broadcast)
+BROADCAST (-1 Not Network)
+
+C: 7b
+S: /32 - 7bits = /25 (4th, 128i)
+I: 192.168.54.0/25
+
+Network: 	192.168.54.0/25
+First Valid IP: 192.168.54.1/25
+Last Valid IP:  192.168.127/25
+Broadcast: 	192.168.54.128/25
+Not Network:	192.168.54.129/?
+
+
+
+!@CORETAAS
+conf t 
+ip routing
+int fa0/9
+no sw
+no shut
+ip add 192.168.56.60 255.255.255.192
+end
+
+
+!@COREBABA
+conf t 
+ip routing
+int fa0/9
+no sw
+no shut
+ip add 192.168.56.65 255.255.255.192
+end
+
+###STATIC ROUTING
+Recipe:
+ip route [DESTINATION] [MASK] [Exit-interface/Next-hop]
+**NOTE**
+
+If host route, use /32 (255.255.255.255)
+If network route, 
+
+
+TASK1: Configure a static host route from R1 destined to 10.1.1.5
+
+!@R1
+conf t
+ip route 10.1.1.5 255.255.255.255 10.1.1.2
+end
+
+RA
+conf t
+ip route 10.1.1.5 255.255.255.255 (/32 subnet because it is a HOST ROUTE) 10.1.1.2
+end
+
+TASK 2: Configure a static HOST route from R1 destined to 10.1.1.6 and verify.
+!@R1
+conf t
+ip route 10.1.1.6 255.255.255.255 10.1.1.2
+end
+
+Configure return traffic
+TASK 3: Configure a static network route from R3 destined for r1 10.1.1.1
+
+!@R3
+conf t 
+ip route 10.1.1.0 255.255.255.252 10.1.1.5
+end 
+
+
+TASK 4: Configure a static NETWORK route from R1 to reach R4 10.1.1.10
+
+!@R1
+conf t
+ip route 10.1.1.10 255.255.255.252 10.1.1.2
+end
+
+!@R4
+conf t
+ip route 10.1.1.1 255.255.255.252 10.1.1.9
+end
+
+!@R2
+conf t 
+ip route 10.1.1.8 255.255.255.252 10.1.1.6
+end
+
+!@A2
+conf t 
+ip route 0.0.0.0 0.0.0.0 192.168.1.129 10
+ip route 0.0.0.0 0.0.0.0 192.168.1.130
+end
+
+PATH SELECTION RULES
+1. Longest Prefix Match (Pinakamadaming daliri)
+
+
+### Dynamic Routing Protocol
+1. IGP
+- Distance Vector
+  EIGRP
+  RIPv2
+
+- Link-State
+  OSPF
+  IS-IS
+
+2. EFP
+- BGP
+
+
+Configuring Dynamic Routing Protocol
+Step 1: Find the directly connected networks
+
+C1:
+VLAN 10	 :  10.2.1.0/24
+VLAN 20	 :  10.2.2.0/24
+VLAN 100 :  192.168.1.128/27
+e1/1	 :  10.1.4.4/30
+
+C2:
+VLAN 10:10.2.1.0/24
+VLAN 20 : 10.2.2.0/4
+VLAN 100  :  192.138.1.128/27
+e1/1 :  10.1.4.8/30
+
+EIGRP
+!@C1
+conf t
+router eigrp 100
+network 10.2.1.0      0.0.0.255
+network 10.2.2.0      0.0.0.0.255
+network 192.168.1.128 0.0.0.31
+network 10.1.4.4      0.0.0.3
+end
+
+!@C2
+conf t
+router eigrp 100
+network 10.2.1.0      0.0.0.255
+network 10.2.2.	      0 0.0.0.255
+network 192.168.1.128 0.0.0.31
+network 10.1.4.8      0.0.0.3
+end
+
+
+
+
+
+conf t 
+int g0/0/0
+ip nat inside
+int g0/0/1
+ip nat outside
+!
+
+
+
+
+conf t
+ip route 0.0.0.0 0.0.0.0 10.2.1.1
+end
+ping 8.8.8.8
+
+
+IPv6 Compression Rules
+000a:000c:0000:0000:0000:0000:0000:0000 /64
+= a:c:: /64
+
+0000:0000:0000:0000:0000:0000:0000:0000 /0
+= :: /0
+fe80:0000:0000:0000:000a:0000:0000:000f /64
+= fe80::a:0:0:f /64
+
+2002:6500:0000:3000:0000:0000:0000:0000 /64
+= 2002:6500:0:3000:: /64
+
+0000:0000:0000:0000:0000:0000:0000:0001 /128
+= ::1 /128
+
+ff00:0000:0000:beef:a00a:0aa0:0000:0000 /8
+= ff00::beef:a00a:aa0:0:0 /8
+
+
+
+
+8  3rd, 8i
+
+
+
+
