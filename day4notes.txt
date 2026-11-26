@@ -1,0 +1,312 @@
+Day 4
+
+
+#### IPv6
+Exercise 1: Subnet for 8 offices using the network address fd00:1::/64
+CAI METHOD
+
+C: 8 offices = 3 bits
+A: /64 + 3bits = /67 (5 butas, 1st Hex, 2i)
+I: EXPAND FIRST = fd00:0001:0000:0000:0000:0000:0000:0000
+		=		     :0000: (1st office)(always start with 0)
+				     :0002: (2nd office)
+				     :0004: (all the way to 64th office)
+
+
+Exercise 2: Subnet for 4 offices using the network address fd00:2::/88
+Using the 3rd Office:
+Apply the First Valid IP on I4
+Apply the Last Valid IP on R4
+
+C: 4 offices = 2bits
+	 A: /88 + 2bits = /90 (6th butas, 3rd hex, 4i)
+	 I: fd00:0002:0000:0000:0000:0000:0000:0000 /90
+1st office: 			    :0000: (always start with 0)
+2nd office:			    :0040:
+3rd office:			    :0080:
+4th office:			    :00c0:
+
+
+IPv5 Router Config
+
+!@I4
+conf t
+ipv6 unicast-routing
+int e0/0
+no shut
+ipv6 add fd00:2::80:0:1/90
+
+!@R4
+conf t
+ipv6 unicast-routing
+int e0/0
+no shut
+ipv6 add fd00:2::bf:ffff:fffe/90
+ping fd00:2::80:0:1
+
+
+Exercise 3: Subnet for 52 offices using the network address fd00:3:0:33::/112
+Determine the 6th Subnet.
+
+C: 52 = 6bits
+A:/112 + 6bits = /118 (8th butas, 2nd hex, 4i)
+I: Expand First = fd00:0003:0000:0033:0000:0000:0000:0000 /118
+First Office	= fd00:0003:0000:0033:0000:0000:0000:0000 /118
+Second Office	= fd00:0003:0000:0033:0000:0000:0000:0400 /118
+Third Office	= fd00:0003:0000:0033:0000:0000:0000:0800 /118
+Fourth Office	= fd00:0003:0000:0033:0000:0000:0000:0c00 /118
+Fifth Office	= fd00:0003:0000:0033:0000:0000:0000:1000 /118
+Sixth Office	= fd00:0003:0000:0033:0000:0000:0000:1400 /118
+
+Network    : fd00:0003:0000:0033:0000:0000:0000:1400 /118 
+First Valid: fd00:0003:0000:0033:0000:0000:0000:1401 /118
+Last Valid : fd00:0003:0000:0033:0000:0000:0000:17ff /118
+Not Net    : fd00:0003:0000:0033:0000:0000:0000:1800 /?
+
+!@R4
+conf t
+ipv6 unicast-routing
+int e0/1
+no shut
+ipv6 add fd00:3:0:33::0:1401/118
+end
+ping fd00:3:0:33::17ff
+
+!@P1
+conf t
+int e0/1
+no shut
+ipv6 add fd00:3:0:33::17ff/118
+end
+
+
+Unicast: One is to one
+Multicast: One to many
+Broadcast: To all
+Anycast:One to the nearest
+
+Last Anycast Address - /120 and below 
+/121 - /128 = NO MORE ANYCAST
+
+Network    :  fd00:0003:0000:0033:0000:0000:0000:1400 /118 
+First Valid:  fd00:0003:0000:0033:0000:0000:0000:1401 /118
+NON ANYCAST:  fd00:0003:0000:0033:0000:0000:0000:177f
+FIRST ANYCAST:fd00:0003:0000:0033:0000:0000:0000:1480
+Last Valid :  fd00:0003:0000:0033:0000:0000:0000:17ff /118
+Not Net    : fd00:0003:0000:0033:0000:0000:0000:1800 /?
+
+ANYCAST = CONSTANT
+NON Anycast  : Last 2 values should always be "7f" (-1 First Anycast)
+First Anycast: Last 2 values should always be "80" (-1 Last Anycast)
+Last Anycast : Last 2 values should always be "ff" (-1 Not Network)
+
+Process: Get Network >> Get Not Network >> Get LAST ANYCAST >> Get NON ANYCAST >> GET FIRST ANYCAST
+
+Exercise 4: Subnet for 182 offices using the network address fd00:4::/100
+Determine the 3rd Subnet.
+
+C: 182 offices = 8 bits
+A: /100 + 8bits = /108 (7th butas,3rd hex, 1i)
+I: Expand = fd00:0004:0000:0000:0000:0000:0000:0000
+1st	  : fd00:0004:0000:0000:0000:0000:0000:0000/108
+2nd       : fd00:0004:0000:0000:0000:0000:0010:0000/108
+3rd       : fd00:0004:0000:0000:0000:0000:0020:0000/108
+
+NETWORK   :fd00:0004:0000:0000:0000:0000:0020:0000/108
+FIRST     :fd00:0004:0000:0000:0000:0000:0030:0000/108
+NON ANY   :fd00:0004:0000:0000:0000:0000:002f:ff7f/108
+FIRST ANY :fd00:0004:0000:0000:0000:0000:002f:ff80/108
+LAST ANY  :fd00:0004:0000:0000:0000:0000:002f:ffff/108
+Not Net   :fd00:0004:0000:0000:0000:0000:0030:0000/?
+
+#### OSI Layer
+1. Physical Layer
+Voltage		802.3af, at, bt
+Interface	Copper, Fiber, Radio Frequency	
+Transmission    
+	-Full Duplex
+	-Half Duplex
+2. Data Link Layer
+
+3. Network Layer
+
+4. Transport Layer
+	SEGMENT   TCP & UDP
+5. Session Layer
+	-RTP
+6. Presentation Layer
+	CODEC g711 g729
+7. Application Layer
+
+!@cmd
+netstat -s -p tcp
+net use \\10.81.1.10\ipc$
+net use x: /delete
+net use x: \\10.81.1.10\c$
+
+
+!@COREBABA
+conf t
+monitor session 1 source interface fa0/3, fa0/5, fa0/7
+monitor session 1 destination interface fa0/1, fa0/9
+end
+
+####
+
+!@cmd
+ping 192.168.102.11   ph
+ping 192.168.102.12   jp
+
+BIGAY INTERNET
+!@UTM-PH, JP
+conf t
+ip domain lookup
+ip name-server 8.8.8.8
+ip route 0.0.0.0 0.0.0.0 208.8.8.2
+end
+ping 8.8.8.8
+
+
+66.254.114.41  = PORNHUB.COM
+66.254.114.238 = REDTUBE.COM
+66.254.114.234 = FAKETAXI.COM
+66.254.114.234 = BANGBROS.COM
+104.21.55.88   = PINAYFLIX.COM
+104.21.34.102  = SULASOK.TV
+208.77.20.35   = IYYOTUBE
+104.19.162.95 = CHATURBATE
+
+!@UTM-PH
+config t
+ no ip access-list standard NOPORN
+ ip access-list standard NOPORN
+  deny 66.254.114.0 0.0.0.255
+  deny 104.0.0.0 0.255.255.255
+  deny 104.21.34.102 0.0.0.0
+  deny host 208.77.20.35
+  permit any
+ int gi 1
+  ip access-group NOPORN in
+  end
+show ip access-list int g1
+
+TO UNBLOCK:
+!@UTM-PH
+config t
+ int gi 1
+no ip access-group NOPORN in
+end
+
+
+EXERCISE: BLOCK SCHOOLS 
+Create Firewall Policy NOSCHOOL
+ping www.dlsu.edu.ph = 104.20.42.168
+ping www.ccp.edu.ph = 50.6.160.47
+ping www.feu.edu.ph = 184.168.125.216
+ping www.ue.edu.ph = 155.137.92.102
+ping www.nu.edu.ph = 75.2.97.79
+
+config t
+ no ip access-list standard NOSCHOOL
+ ip access-list standard NOSCHOOL
+  deny 104.20.42.168 0.0.0.255
+  deny 50.6.160.47.255.255.255
+  deny 184.168.125.216 0.0.0.0
+  deny 155.137.975.2.97.792.102
+  deny 75.2.97.79
+  permit any
+ int gi 1
+  ip access-group NOSCHOOL in
+  end
+show ip access-list int g1
+
+
+http, https, ping, ssh, dns
+80		
+
+!@UTMPH
+conf t
+ no ip access-list extended FWP4
+ ip access-list extended FWP4
+ permit tcp Any host www.bet100.com eq 80 log
+ permit tcp Any host www.bet100.com eq 443 log
+ permit icmp Any host www.bet100.com log
+ permit tcp Any host www.bet100.com eq 22 log
+ permit tcp Any host www.bet100.com eq 53 log
+ Int gi 3
+  no ip access-group FWP4 in
+int g1
+ip access-group FPW4 in
+  end
+
+!@CMD Verify
+nmap -v www.bet100.com
+
+
+
+Create an access-list named FWP6 to open the following ports:  
+www.bet100.com open only 
+
+sccp 2000
+sip 5060
+imap 143
+smtp 25
+pop3 110
+ftp 20-21
+tftp 69
+ntp 123
+~~~
+!@UTM-PH
+conf t
+ no ip access-list extended FWP6
+ ip access-list extended FWP6
+ permit tcp Any host www.bet100.com eq 2000 log
+ permit tcp Any host www.bet100.com eq 5060 log
+ permit tcp Any host www.bet100.com eq 143 log
+ permit tcp Any host www.bet100.com eq 25 log
+ permit tcp Any host www.bet100.com eq 110 log
+ permit tcp Any host www.bet100.com eq 21 log
+ permit udp Any host www.bet100.com eq 69 log
+ permit udp Any host www.bet100.com eq 123 log
+ Int gi 1
+  ip access-group FWP6 in
+  end
+
+Int gi 1
+  no ip access-group FWP6 in
+  end
+
+
+!@cmd
+telnet 10.51.1.2
+
+pass: SCHOOL
+pass: COURSE
+pass: pass
+
+
+HOT TO ESTABLISH SECURE CONNECTION (TCP Streams in Wireshark)
+
+!UTM-PH
+conf t
+hostname CTAAS	-SEC
+ip domain name ccna.sec
+crypto key generate rsa
+! > 2048
+ip ssh version 2
+line vty 0 14
+login local
+transport input all
+username admin privilege 15 secret pass
+
+
+
+RESTCONF (API)
+- Protocol: https
+- Port : 443
+- Encoding: JSON/XML
+- HTTPS METHODS: GET PUT PATCH DELETE
+
+NETCONF
+- Protocol: SSH
+- Port: 830
