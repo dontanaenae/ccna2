@@ -1,0 +1,168 @@
+IR ElasticSys
+
+root
+C!sc0123
+
+ip addr
+1year exp:
+
+http://208.8.8.133/otrs/customer.pl
+http://208.8.8.133/otrs/index.pl
+
+1. shell.com.ph
+2. kc@shell.com.ph
+3. service: [NOC] enterprise swich deployment
+4. customer user = service
+
+
+pROMPT FOR AI
+Write a complete ITSM using otrs/zhuny on how to MSP/NOC an entire cisc network service request
+
+### Switching
+
+5 Superheroes
+Q- Qupid
+D
+W
+S
+X
+
+
+trunk code (kabisaduhin na for trunk lab!!!)
+
+config t
+Int Range fa0/10-12
+ shutdown
+ switchport trunk Encap Dot1Q
+ switchport mode trunk
+ switchport trunk allowed vlan 1-100
+ switchport trunk native vlan 1
+ no shut
+ do sh int trunk
+
+
+4 spanning tree states
+
+Block, Listen, Learn, Forward
+command: sh spanning-tree
+
+
+
+
+@TAAS/PLDTinternet:
+config t
+hostname coretaasPLDT
+Track 1 Int gi 0/1 line-protocol
+Int vlan 1
+standby 1 ip 10.51.1.6
+standby 1 preempt
+standby 1 Priority 150
+standby 1 Track 1 decrement 60
+
+COREBABA/GLOBE:
+config t
+hostname corebabaGLOBE
+Int vlan 1
+standby 1 ip 10.51.1.6
+standby 1 preempt
+standby 1 Priority 100
+end
+
+ETHERCHANNEL			c GMA cpl
+config t			
+Int Range fa0/10-12
+ channel-group 1 mode active
+ channel-protocol Lacp
+ do sh etherchannel summary
+ do sh int po1 | inc BW
+
+
+
+REVIEW:
+Q,D,W,S,X HSRP, ETHERCHANNEL
+Q: sted smt stac stnv
+switchport trunk encap dot1q
+switchport mode trunk 
+switchport trunk allow vlan 10, 20, 30
+switchport trunk native vlan 10
+
+D: config t
+spanning-tree pvst
+
+W: 
+config t
+spanning-tree rapid-pvst\
+
+S:
+config t
+spanning-tree mst
+
+HSRP:
+
+Etherchannel:
+channel-group mode active
+channel protocol lacp
+
+
+config t
+logging on
+logging host 208.8.8.133 transport udp port 9001
+logging trap informational
+end
+!-------
+config t
+archive
+log config
+logging enable
+notify syslog
+end
+!-------------
+config t
+login on-failure log
+login on-success log
+end
+
+HOW TO RUN ELK STACK AT HOME
+root
+C1sco123
+
+systemctl restart elasticsearch.service
+ip addr
+
+208.8.8.133
+
+onCisco Firewall
+config t
+logging on
+logging host 208.8.8.133 transport udp port 9001
+logging trap informational
+end
+!-------
+config t
+archive
+log config
+logging enable
+notify syslog
+end
+!-------------
+config t
+login on-failure log
+login on-success log
+end
+
+CISCO AND ELK STACK INTEGRATION
+config t
+NO ip access-list standard NOPORN
+ip access-list standard NOPORN
+DENY 66.254.0.0 0.0.255.255 log
+deny 161.49.0.0 0.0.255.255 log
+DENY 104.21.0.0 0.0.255.255 log
+DENY 68.235.0.0 0.0.255.255 log
+DENY 104.17.0.0 0.0.255.255 log
+DENY 88.208.0.0 0.0.255.255 log
+DENY 208.77.0.0 0.0.255.255 log
+DENY 172.67.0.0 0.0.255.255 log
+Permit Any
+Int Gi 1
+ ip access-group NOPORN in
+end
