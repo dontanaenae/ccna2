@@ -1,0 +1,481 @@
+CCNA Day3
+
+### Warm Up
+
+| CIDR | SUBNET MASK     | RIVAN    | WILDCARD     |
+| ---  | ---             | ---      | ---          |
+| /18    255.255.192.0     3rd, 64i   0.0.63.255
+| /27    255.255.255.224    4th, 32i  0.0.0.31
+| /14    255.252.0.0       2nd, 4i    0.3.255.255
+| /30    255.255.255.252   4th, 4i    0.0.0.3       
+
+| BitLen |       |
+| ---    | ---   |
+| 42     | 6     |
+| 1800   | 11    |
+| 365    | 9     |
+| 980    | 10    |
+| 112    | 7     |
+
+
+
+### PRIVATE IP ADDRESS
+10.0.0.0   -   10.255.255.255  CLASS A
+172.16.0.0 -   172.31.255.255  CLASS B
+192.168.0.0 -  192.168.255.255 CLASS C
+
+
+### SUBNETTING
+Department: ADMIN 
+12 IPs
+Address Space 10.0.0.0/8
+
+The First Network is unusable
+
+Convert: 12 = 4 bits
+S: 32 - 4bits = /28  (4th, 16i)
+
+10.0.0.0/28
+10.0.0.15
+
+I: Ipasok si 16i sa 4th Octet
+- 10.0.0.16 /28
+
+Network:                 10.0.0.16 /28
+  First Valid (+1 Net)   10.0.0.17
+  Last Valid (-1 Broad): 10.0.0.30
+  Broadcast (-1 NOT):    10.0.0.31
+
+Not Network:             10.0.0.32 /?
+
+===============
+
+1. Design a network for 64 computers using the address space
+192.168.53.128/25  
+The first network is unusable.
+
+C: 64 = 7 bits
+S: /32 - 7 = /25 (4th, 128i)
+Ipasok si 128i sa 4th octet:
+
+192.168.54.0/25
+
+Network:                  192.168.54.0/25 
+  First Valid (+1 Net):   192.168.54.1
+  Last Valid (-1 Broad):  192.168.54.126
+  Broadcast (-1 NOT):     192.168.54.127
+
+Not Network:              192.168.54.128/?   
+
+
+
+###
+
+Ping
+10.M.1.2   TAAS
+10.M.1.4   BABA
+
+!@cmd
+ping 10.M.1.2
+
+
+!@CoreTAAS
+conf t
+ ip routing
+ int fa0/9
+  no sw
+  no shut
+  ip add 192.168.56.60 255.255.255.192
+  end
+
+
+!@CoreBABA
+conf t
+ ip routing
+ int fa0/9
+  no sw
+  no shut
+  ip add 192.168.56.65 255.255.255.192  /64
+  end
+
+
+######
+
+!@cmd
+cd desktop
+cd FOLDERNIYO
+
+git clone -b ccna https://github.com/4rthurCyber08/Rivan_Day3
+
+
+### STATIC ROUTING
+
+Recipe:
+ip route [Destination]   [MASK]  [Exit-Interface/Next-Hop]
+
+
+TASK 1: Configure a static host route from R1 destined to 10.1.1.5
+
+!@R1
+conf t
+ ip route 10.1.1.5  255.255.255.255  10.1.1.2
+ end
+ping 10.1.1.5
+
+
+
+TASK 2: Configure a static HOST route from R1 destined to 10.1.1.6 and verify.
+
+
+!@R1
+conf t
+ ip route 10.1.1.6  255.255.255.255  10.1.1.2
+ end
+ping 10.1.1.6
+
+
+Configure Return Traffic
+
+Configure a Static Network Route from R3 destined 
+for R1 10.1.1.1
+
+!@R3
+conf t
+ no ip route 10.1.1.0  255.255.255.252  10.1.1.2  !bura ng mali
+ ip route 10.1.1.0  255.255.255.252  10.1.1.5
+ end
+ping 10.1.1.1
+
+
+
+TASK 3: Configure a static NETWORK route from R1 to reach 
+R4 10.1.1.10. 
+Make Sure R1 and R4 can Ping each other
+
+
+!@R1
+conf t
+ ip route 10.1.1.8  255.255.255.252  10.1.1.2
+ end
+ping 10.1.1.10
+
+!@R4
+conf t
+ ip route 10.1.1.0  255.255.255.252  10.1.1.9
+ end
+ping 10.1.1.1
+
+
+Make Sure Every Next Hop know how to reach the destination.
+
+TASK 4: Configure a static host/network route for R2 to 
+reach R4
+
+!@R2
+conf t
+ ip route 10.1.1.8  255.255.255.252  10.1.1.6
+ end
+ping 10.1.1.10
+
+
+
+
+
+
+
+
+
+
+
+
+!@A2
+conf t
+ ip route 0.0.0.0 0.0.0.0 192.168.1.129 10
+ ip route 0.0.0.0 0.0.0.0 192.168.1.130 1
+ end
+show ip route static
+
+
+### PATH SELECTION RULES
+1. Longest Prefix Match
+2. ?
+
+
+### Dynamic Routing
+IGP
+- Distance Vector
+  - EIGRP
+  - RIPv2
+- Link-State
+  - OSPF
+  - IS-IS
+EGP
+- BGP
+
+
+Configuring Dynamic Routing Prot
+Step 1. Find the directly connected networks
+
+C1:
+VLAN 10  : 10.2.1.0/24
+VLAN 20  : 10.2.2.0/24
+VLAN 100 : 192.168.1.128/27
+E1/1     : 10.1.4.4/30
+
+C2:
+VLAN 10  : 10.2.1.0/24
+VLAN 20  : 10.2.2.0/24
+VLAN 100 : 192.168.1.128/27
+E1/1     : 10.1.4.8/30
+
+
+EIGRP
+!@C1
+conf t
+ router eigrp 100
+  network 10.2.1.0      0.0.0.255
+  network 10.2.2.0      0.0.0.255
+  network 192.168.1.128 0.0.0.31           Resume 12:50pm
+  network 10.1.4.4      0.0.0.3
+  end 
+
+!@C2
+conf t
+ router eigrp 100
+  network 10.2.1.0      0.0.0.255
+  network 10.2.2.0      0.0.0.255
+  network 192.168.1.128 0.0.0.31
+  network 10.1.4.8      0.0.0.3
+  end 
+show ip eigrp neighbor
+
+
+
+### PM 
+
+Exercise: Find the Network
+1. 10.78.145.230/12
+2. 172.16.189.40/19
+3. 192.168.5.29/30
+
+
+Configure R2 & R1 for EIGRP AS 100
+- Advertise all Connected Networks
+
+!@R2
+conf t
+ router eigrp 100
+  network 10.46.187.22 0.0.0.0
+  network 192.168.0.152 0.0.0.3
+  network 10.0.15.64  0.0.0.31
+  end
+
+!@R1
+conf t
+ router eigrp 100
+  network 172.16.97.111 0.0.0.0
+  network 172.16.160.0  0.0.7.255
+  network 10.0.15.64  0.0.0.31
+  end
+
+Find the Network
+ C 192.168.0.152 /30
+ 192.168.0.154  /30  (4th, 4i)
+
+40 + 40 = 80
+80 + 80 = 160
+          156
+          152
+
+
+!@R2
+conf t
+ router eigrp 100
+  network 172.16.97.111 0.0.0.0
+  network 172.16.160.0  0.0.7.255
+  network 10.0.15.64  0.0.0.31
+  end
+
+
+
+
+### OSPF
+Link-State
+
+Hello > LSU (Link-State Updates)
+          1. LSA
+             - T1 LSA - Router LSA
+              
+R ID  :  iba
+A ID  :  same
+SUBNET
+AUTH
+NET T
+TIMERS
+STUB AREA
+       
+             - T2 LSA - NETWORK LSA (DR)
+             - T3 LSA - SUMMARY LSA
+             - T4 LSA - ASBR LSA
+             - T5 LSA - AS EXTERNAL
+
+### OSPF STATES
+DOWN
+INIT
+TWO-WAY
+EXSTART
+EXCHANGE
+LOAD
+FULL
+
+### REDISTRIBUTION
+SEED METRICS
+- EIGRP
+- RIP   SEED METRIC : INFINITY
+- OSPF  20
+
+
+
+
+### NAT
+!@EDGE
+conf t
+ int g0/0/0
+  ip nat inside
+ int g0/0/1
+  ip nat outside
+ !
+
+!@P1/P2
+conf t
+ ip route 0.0.0.0   0.0.0.0   10.2.1.1
+ end
+ping 8.8.8.8
+
+
+### PATH SELECTION RULE
+1. Longest Prefix
+
+Ex. 1: Destination 10.5.20.37
+~~~
+S     10.5.20.0/24 
+D     10.5.20.32/27
+R     10.5.20.36/30          
+O     10.5.20.0/25 
+B     10.5.20.0/30
+~~~
+
+2. Admin Distance
+Ex. 2: Destination 10.5.20.37
+~~~
+S     10.5.20.0/25            1
+D     10.5.20.0/25
+R     10.5.20.0/25
+O     10.5.20.0/25
+~~~
+
+C = 0
+S = 1
+D = 90
+R = 120
+O = 110
+IS = 115
+iB = 200
+eB = 20
+
+
+3. Metric
+Ex. 3: Destination 10.5.20.37
+~~~
+O     10.5.20.0/25  [110/30]
+O     10.5.20.0/25  [110/60]
+O     10.5.20.0/25  [110/10] 
+O     10.5.20.0/25  [110/20]
+~~~
+
+
+
+
+
+
+
+### 🎯 Exercise: Compress IPv6 addresses
+
+` 000a:000c:0000:0000:0000:0000:0000:0000/64 `
+  = a:c::/64
+` 0000:0000:0000:0000:0000:0000:0000:0000/0 `
+  = ::/0   = Default Gateway
+` fe80:0000:0000:0000:000a:0000:0000:000f/64 `
+  = fe80::a:0:0:f/64      = Link-Local
+` 2002:6500:0000:3000:0000:0000:0000:0000/64 `
+  = 2002:6500:0:3000::/64
+` 0000:0000:0000:0000:0000:0000:0000:0001/128 `
+  = ::1/128 = Loopback
+` ff00:0000:0000:beef:a00a:0aa0:0000:0000/8 `
+  = ff00::beef:a00a:aa0:0:0/8 = Multicast Address
+
+
+
+     BUTAS  HEX   i
+/77  - 5    4th   8i
+/38  - 3    2nd   4i
+/121 - 8    3rd   8i
+
+         2001:0000:0000:0000:0000:0000:0000:0000:/38
+         :0400:
+         :0800:
+         :0C00:
+         :1000:
+
+
+
+1.  16 new sites.
+Subnet 2001:DB8::/50 to meet the subnet requirements and maximize the number of hosts
+  Using the second subnet
+
+
+Users,admin,pc,hosts = CSI
+Subnets, Sites, Departments = CAI
+
+Convert  16 sites = 4 bits
+Add      /50  + 4bits = /54  4 Butas, 2nd Hex, 4i
+Insert
+2001:0DB8:0000:0000:0000:0000:0000:0000/54
+              :0000:
+              :0400:
+              :0800:
+              :0C00:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
